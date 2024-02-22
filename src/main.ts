@@ -1,3 +1,5 @@
+console.log(import.meta.env.VITE_API_KEY);
+
 interface Data {
   conversion_rates: Record<string, number>;
 }
@@ -35,6 +37,8 @@ class FetchWrapper {
     }).then((response) => response.json());
   }
 }
+
+console.log(typeof FetchWrapper);
 
 //TODO
 /* The goal of this project is to show the user the conversion rate between 2 currency pairs.
