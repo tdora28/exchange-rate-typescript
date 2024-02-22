@@ -1,5 +1,3 @@
-console.log(import.meta.env.VITE_API_KEY);
-
 interface Data {
   conversion_rates: Record<string, number>;
 }
@@ -38,8 +36,6 @@ class FetchWrapper {
   }
 }
 
-console.log(typeof FetchWrapper);
-
 //TODO
 /* The goal of this project is to show the user the conversion rate between 2 currency pairs.
   The currency chosen on the left is the base currency and the currency chosen on the right is the target currency.
@@ -70,22 +66,64 @@ const targetCurrencyEl = document.querySelector('#target-currency') as HTMLSelec
 
 // A global variable that references the HTML paragraph element with the id conversion-result
 const resultEl = document.querySelector('#conversion-result') as HTMLParagraphElement;
-console.log(resultEl);
 
 // A global variable that stores the conversion rates for each currency pair as an array of arrays
+let conversionsArr: [string, number][] = [];
+
+// A constant that stores the API key for authentication
+const apiKey = import.meta.env.VITE_API_KEY;
+const baseURL = `https://v6.exchangerate-api.com/v6/${apiKey}/latest/`;
 
 // An instance of the FetchWrapper class with the base URL of the API
-// A constant that stores the API key for authentication
+const apiTool = new FetchWrapper(baseURL);
 
 // A call to the get method of the API instance with the endpoint that requests the latest conversion rates for the USD currency
 // Assign the conversion_rates property of the response data to the rates variable
+// apiTool.get('USD').then((res) => {
+//   const data = res.conversion_rates;
+//   for (const item in data) {
+//     const itemArr: [string, number] = [item, data[item]];
+//     conversionsArr.push(itemArr);
+//   }
+//   console.log(conversionsArr);
+// });
 
 // Add an event listener to the base element that invokes the getConversionRates function when the user selects a new value
-// base.addEventListener('change', getConversionRates);
+const getConversionRates = async () => {
+  const base = baseCurrencyEl.value;
+  const target = targetCurrencyEl.value;
+
+  // Clean prev data from conversionsArr
+  conversionsArr = [];
+
+  // Push data to conversionsArr in the requested format (array of arrays)
+  await apiTool.get(base).then((res) => {
+    const data = res.conversion_rates;
+    for (const item in data) {
+      const itemArr: [string, number] = [item, data[item]];
+      conversionsArr.push(itemArr);
+    }
+  });
+
+  // Find conversion rate
+  currencyConversion(conversionsArr, target);
+};
+
+baseCurrencyEl.addEventListener('change', getConversionRates);
+
 // Add an event listener to the target element that invokes the getConversionRates function when the user selects a new value
+targetCurrencyEl.addEventListener('change', getConversionRates);
 
 // A function that performs the currency conversion and updates the UI
-
 // Iterate over the rates array and find the rate that matches the target currency value
 // If the currency name matches the target currency value
 // Assign the conversion rate to the textContent property of the result element, which displays it on the web page
+const currencyConversion = (currencyArr: [string, number][], target: string) => {
+  let conversionRate;
+  for (const item of currencyArr) {
+    if (item[0] === target) {
+      conversionRate = item[1];
+    }
+  }
+  resultEl.textContent = conversionRate ? conversionRate.toString() : 'error';
+};
