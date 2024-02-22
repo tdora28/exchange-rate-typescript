@@ -63,8 +63,15 @@ console.log(typeof FetchWrapper);
 // TODO: WRITE YOUR TYPESCRIPT CODE HERE
 
 // A global variable that references the HTML select element with the id base-currency
+const baseCurrencyEl = document.querySelector('#base-currency') as HTMLSelectElement;
+
 // A global variable that references the HTML select element with the id target-currency
+const targetCurrencyEl = document.querySelector('#target-currency') as HTMLSelectElement;
+
 // A global variable that references the HTML paragraph element with the id conversion-result
+const resultEl = document.querySelector('#conversion-result') as HTMLParagraphElement;
+console.log(resultEl);
+
 // A global variable that stores the conversion rates for each currency pair as an array of arrays
 
 // An instance of the FetchWrapper class with the base URL of the API
